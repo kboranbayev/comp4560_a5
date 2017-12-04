@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>COMP 4560 - Assignment 5</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+		<style>
+			#info {
+				position: absolute;
+				width: 100%;
+				padding: 5px;
+				font-family: Monospace;
+				font-size: 13px;
+				text-align: center;
+				color: #ffffff;
+			}
+			#controllers {
+				position: absolute;
+				background-color: white;
+				top: 0px;
+			}
+			a {
+				color: #ffffff;
+			}
+		</style>
+		<script src="build/three.js"></script>
+		<script src="examples/js/controls/OrbitControls.js"></script>
+		<script src="examples/js/libs/dat.gui.min.js"></script>
+		<script src="examples/js/libs/stats.min.js"></script>
+	</head>
+	<body>
+		<div id="controllers">
+			<label>Points here
+				<input type="file" id="csvFileInput1" onchange="handleFiles1(this.files)" accept=".dat"></input>
+			<label>
+			<br>
+			<label for="csvFileInput2">Lines here
+				<input type="file" id="csvFileInput2" onchange="handleFiles2(this.files)" accept=".dat"></input>
+			<label>
+			<br>
+			<a onclick="translateLeft()" class="btn btn-primary"><span class="glyphicon glyphicon-arrow-left"></span></a>
+			<a onclick="translateRight()" class="btn btn-primary"><span class="glyphicon glyphicon-arrow-right"></span></a>
+			<br>
+			<a onclick="translateUp()" class="btn btn-primary"><span class="glyphicon glyphicon-arrow-up"></span></a>
+			<a onclick="translateDown()" class="btn btn-primary"><span class="glyphicon glyphicon-arrow-down"></span></a>
+			<br>
+			<a onclick="scaleUp()" class="btn btn-primary"><span class="glyphicon glyphicon-zoom-in"></span></a>
+			<a onclick="scaleDown()" class="btn btn-primary"><span class="glyphicon glyphicon-zoom-out"></span></a>
+			<br>
+			<a onclick="rotateX()" class="btn btn-primary"><span class="glyphicon glyphicon-repeat">X</span></a>
+			<a onclick="rotateY()" class="btn btn-primary"><span class="glyphicon glyphicon-repeat">Y</span></a>
+			<a onclick="rotateZ()" class="btn btn-primary"><span class="glyphicon glyphicon-repeat">Z</span></a>
+			<br>
+			<a onclick="rotateXcon()" class="btn btn-primary"><span class="glyphicon glyphicon-refresh">X</span></a>
+			<a onclick="rotateYcon()" class="btn btn-primary"><span class="glyphicon glyphicon-refresh">Y</span></a>
+			<a onclick="rotateZcon()" class="btn btn-primary"><span class="glyphicon glyphicon-refresh">Z</span></a>
+			<br>
+			<a onclick="shearRight()" class="btn btn-primary"><span class="glyphicon">Shear R</span></a>
+			<a onclick="shearLeft()" class="btn btn-primary"><span class="glyphicon">Shear L</span></a>
+			<br>
+			<a onclick="reset()" class="btn btn-primary"><span class="glyphicon glyphicon-registration-mark"></span></a>
+		</div>
+
+		<div id="container"></div>
+		<!--
+		<div id="info">
+			<p>
+				<span>Yellow Arrows: Face Normals</span><br>
+				<span>Red Arrows: Vector3 Normals</span>
+			</p>
+		</div>
+		-->
+		<script type="text/javascript" src="js/main.js"></script>
+
+	</body>
+</html>
