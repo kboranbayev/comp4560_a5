@@ -1,21 +1,18 @@
-var container, stats, controls;
+/**
+  *  COMP 4560 - Assignment 5
+  *  Basic Transformations
+  *
+  *  @autor Boranbayev Kuanysh
+  *  @autor Michael Chen
+  **/
+var container, controls;
 var scene, renderer;
-var frustumSize = 1000;
 var rotX, rotY, rotZ;
-var camera = new THREE.OrthographicCamera( window.innerWidth / -2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / -2, 0.1, 2000 );
-
-var mesh;
-
-var material = new THREE.LineBasicMaterial( { color: 0xfefefe, wireframe: true, opacity: 0.5 } );
-var geometry = new THREE.Geometry();
-var initialGeometry = new THREE.Geometry();
-var line = new THREE.LineSegments(geometry, material);
-
-var points = [];
-var lines = [];
+var points = [];  // stores points
+var lines = [];   // stores lines
 
 /////////////////////////////////////
-
+// Input File Opener for Points file
 function handleFiles1(files) {
   if (window.FileReader) {
     getAsText1(files[0]);
@@ -23,6 +20,7 @@ function handleFiles1(files) {
     alert('FileReader are not supported in this browser.');
   }
 }
+// Input File Reader for Lines file
 function getAsText1(fileToRead) {
   var reader = new FileReader();
 
@@ -31,12 +29,14 @@ function getAsText1(fileToRead) {
   reader.onload = loadHandler1;
   reader.onerror = errorHandler;
 }
+// Input File Loader for Points file
 function loadHandler1(event) {
   var csv = event.target.result;
   processData1(csv);
 }
-function processData1(csv) {
-  var allTextLines = csv.split(/\r\n|\n/);
+// Input File Processer for Points file
+function processData1(dat) {
+  var allTextLines = dat.split(/\r\n|\n/);
 
   for (var i = 0; i < allTextLines.length; i++) {
     var data = allTextLines[i].split(' ');
@@ -46,9 +46,8 @@ function processData1(csv) {
     }
     points.push(tarr);
   }
-  //console.log(points);
 }
-//////////////////////////////////////////////////////
+// Input File Opener for Lines file
 function handleFiles2(files) {
   if (window.FileReader) {
     getAsText2(files[0]);
@@ -56,6 +55,7 @@ function handleFiles2(files) {
     alert('FileReader are not supported in this browser.');
   }
 }
+// Input File Reader for Lines file
 function getAsText2(fileToRead) {
   var reader = new FileReader();
 
@@ -64,12 +64,14 @@ function getAsText2(fileToRead) {
   reader.onload = loadHandler2;
   reader.onerror = errorHandler;
 }
+// Input File Loader for Lines file
 function loadHandler2(event) {
-  var csv = event.target.result;
-  processData2(csv);
+  var dat = event.target.result;
+  processData2(dat);
 }
-function processData2(csv) {
-  var allTextLines = csv.split(/\r\n|\n/);
+// Input File Processer for Lines file
+function processData2(dat) {
+  var allTextLines = dat.split(/\r\n|\n/);
 
   for (var i = 0; i < allTextLines.length; i++) {
     var data = allTextLines[i].split(' ');
@@ -82,94 +84,192 @@ function processData2(csv) {
   init();
   animate();
 }
-//////////////////////////////////////////////////////
+// Input File Error Handler
 function errorHandler(evt) {
   if (evt.target.error.name === "NotReadableError") {
     alert("Cannot read file!");
   }
 }
+{
+    var camera = new THREE.OrthographicCamera( window.innerWidth / -2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / -2, 0.1, 2000 );
+    var material = new THREE.LineBasicMaterial( { color: 0xfefefe, wireframe: true, opacity: 0.5 } );
+    var geometry = new THREE.Geometry();
+    var initialGeometry = new THREE.Geometry();
+    var line = new THREE.LineSegments(geometry, material);
+}
 
-
-// Moves the object by 75 pixels in - x direction
+/*
+  Translates left by 7.5
+*/
 function translateLeft() {
   console.log('translate left triggered');
-  /*
   var m = new THREE.Matrix4();
-  m.set( 1, 0, 0, 0,
-         0, 1, 0, 0,
-         0, 0, 1, 0,
-     -0.75, 0, 0, 1 );
+  m.set( 1,    0,    0, -7.5,
+         0,    1,    0,    0,
+         0,    0,    1,    0,
+         0,    0,    0,    1 );
   geometry.applyMatrix(m);
-  var scaleFactor = 160 / geometry.boundingSphere.radius;
-  geometry.scale( scaleFactor, scaleFactor, scaleFactor );
-  */
-  geometry.translate(-7.5, 0, 0);
+  // render
   render();
 }
 
+/*
+  Translates right by 7.5
+*/
 function translateRight() {
   console.log('translate right triggered');
-  geometry.translate(7.5, 0, 0);
+  var m = new THREE.Matrix4();
+  m.set( 1,    0,    0,  7.5,
+         0,    1,    0,    0,
+         0,    0,    1,    0,
+         0,    0,    0,    1 );
+  geometry.applyMatrix(m);
+  // render
   render();
 }
 
+/*
+  Translates up by 3.5
+*/
 function translateUp() {
   console.log('translate up triggered');
-  geometry.translate(0, 3.5, 0);
+  var m = new THREE.Matrix4();
+  m.set( 1,    0,    0,    0,
+         0,    1,    0,  3.5,
+         0,    0,    1,    0,
+         0,    0,    0,    1 );
+  geometry.applyMatrix(m);
+  // render
   render();
 }
 
+/*
+  Translates down by 3.5
+*/
 function translateDown() {
   console.log('translate down triggered');
-  geometry.translate(0, -3.5, 0);
+  var m = new THREE.Matrix4();
+  m.set( 1,    0,    0,    0,
+         0,    1,    0, -3.5,
+         0,    0,    1,    0,
+         0,    0,    0,    1 );
+  geometry.applyMatrix(m);
+  // render
   render();
 }
 
+/*
+  Scales up by 10%
+*/
 function scaleUp() {
   console.log('scale up triggered');
-  geometry.scale(1.1, 1.1, 1.1);
+  //geometry.scale(1.1, 1.1, 1.1);
+  var m = new THREE.Matrix4();
+  m.set( 1.1,   0,     0,    0,
+           0,  1.1,    0,    0,
+           0,    0,  1.1,    0,
+           0,    0,    0,    1 );
+  geometry.applyMatrix(m);
   render();
 }
 
+/*
+  Scales down by 10%
+*/
 function scaleDown() {
   console.log('scale down triggered');
-  geometry.scale(10/11, 10/11, 10/11);
+  var m = new THREE.Matrix4();
+  m.set( 10/11,     0,     0,    0,
+             0, 10/11,     0,    0,
+             0,     0, 10/11,    0,
+             0,     0,     0,    1 );
+  geometry.applyMatrix(m);
+  // render
   render();
 }
 
+/*
+  Clockwise Rotation about x-axis
+  by 0.05 radians
+*/
 function rotateX() {
   console.log('rotate about x triggered');
-  geometry.rotateX(0.05);
+  var cosA = Math.cos(0.05);
+  var sinA = Math.sin(0.05);
+  var m = new THREE.Matrix4();
+  m.set(     1,     0,     0,    0,
+             0,  cosA,  sinA,    0,
+             0, -sinA,  cosA,    0,
+             0,     0,     0,    1 );
+  geometry.applyMatrix(m);
+  // render
   render();
 }
 
+/*
+  Clockwise Rotation about y-axis
+  by 0.05 radians
+*/
 function rotateY() {
   console.log('rotate about y triggered');
-  geometry.rotateY(-0.05);
+  var cosA = Math.cos(0.05);
+  var sinA = Math.sin(0.05);
+  var m = new THREE.Matrix4();
+  m.set(  cosA,     0,  sinA,    0,
+             0,     1,     0,    0,
+         -sinA,     0,  cosA,    0,
+             0,     0,     0,    1 );
+  geometry.applyMatrix(m);
+  // render
   render();
 }
 
+
+/*
+  Clockwise Rotation about z-axis
+  by 0.05 radians
+*/
 function rotateZ() {
   console.log('rotate about z triggered');
-  geometry.rotateZ(-0.05);
+  var cosA = Math.cos(0.05);
+  var sinA = Math.sin(0.05);
+  var m = new THREE.Matrix4();
+  m.set(  cosA,  sinA,     0,    0,
+         -sinA,  cosA,     0,    0,
+             0,     0,     1,    0,
+             0,     0,     0,    1 );
+  geometry.applyMatrix(m);
+  // render
   render();
 }
 
+/*
+  Clockwise Continuous Rotation about x-axis
+*/
 function rotateXcon() {
   console.log('continuous rotate about x triggered');
   rotX = setInterval(rotateX, 50);
 }
 
+/*
+  Clockwise Continuous Rotation about y-axis
+*/
 function rotateYcon() {
   console.log('continuous rotate about y triggered');
   rotY = setInterval(rotateY, 50);
 }
 
+/*
+  Clockwise Continuous Rotation about z-axis
+*/
 function rotateZcon() {
   console.log('continuous rotate about z triggered');
   rotZ = setInterval(rotateZ, 50);
 }
 
+/*
+  Shears in the +x direction with respect to y
+*/
 function shearRight() {
   console.log('Shear right triggered');
   var m = new THREE.Matrix4();
@@ -178,9 +278,13 @@ function shearRight() {
          0,    0,   1,   0,
          0,    0,   0,   1 );
   geometry.applyMatrix(m);
+  // render
   render();
 }
 
+/*
+  Shears in the -x direction with respect to y
+*/
 function shearLeft() {
   console.log('Shear left triggered');
   var m = new THREE.Matrix4();
@@ -189,26 +293,36 @@ function shearLeft() {
          0,    0,   1,   0,
          0,    0,   0,   1 );
   geometry.applyMatrix(m);
+  // render
   render();
 }
 
+/*
+  Resets all to initial state
+*/
 function reset() {
   console.log('Reset triggered');
-  clearInterval(rotX);
-  clearInterval(rotY);
-  clearInterval(rotZ);
+  // stop all continuous rotations
+  {
+    clearInterval(rotX);
+    clearInterval(rotY);
+    clearInterval(rotZ);
+  }
+  // remove current state
   scene.remove(line);
   geometry.dispose();
+  // reset to initial state
   geometry = initialGeometry;
-  // reset initial setup
   line = new THREE.LineSegments(geometry, material);
   scene.add(line);
-  controls.reset();
-  // render
+  // normalize view and render
   normalize();
   render();
 }
 
+/*
+  View normalizer
+*/
 function normalize() {
   geometry.normalize();
   var scaleFactor = 160 / geometry.boundingSphere.radius;
@@ -216,16 +330,15 @@ function normalize() {
   camera.position.z = 500;
   camera.position.x = 0;
   camera.position.y = 0;
-  for (i = 0; i < 11; i++)
+  for (i = 0; i < 10; i++)
     scaleUp();
 }
 
-function addMesh() {
-  //console.log(points);
-  //console.log(lines);
-
+/*
+  Builds initial view of a character
+*/
+function addCharacter() {
   // getting data from read data which stored in global variables like points and lines
-  // this is lazy version.
   // l is array such as for line 0, l['1','0']
   lines.forEach(function(l) {
     while (l[0] !== "-1" && l[1] !== "" && l[0] !== "") {
@@ -256,44 +369,60 @@ function addMesh() {
 }
 
 function init() {
+  // get element which will act as workspace
   container = document.getElementById( 'container' );
 
-  camera.position.z = 500;
-  camera.position.x = 0;
-  camera.position.y = 0;
+  // make viewer position
+  {
+    camera.position.z = 500;
+    camera.position.x = 0;
+    camera.position.y = 0;
+  }
 
+  // build scene
   scene = new THREE.Scene();
 
-  addMesh();
+  // build a character
+  addCharacter();
 
-  renderer = new THREE.WebGLRenderer( { antialias: true } );
-	renderer.setPixelRatio( window.devicePixelRatio );
-	renderer.setSize( window.innerWidth, window.innerHeight );
-	container.appendChild( renderer.domElement );
+  // build renderer for scene
+  {
+    renderer = new THREE.WebGLRenderer( { antialias: true } );
+    renderer.setPixelRatio( window.devicePixelRatio );
+    renderer.setSize( window.innerWidth, window.innerHeight );
+    container.appendChild( renderer.domElement );
+    // orbit controls
+    controls = new THREE.OrbitControls( camera, renderer.domElement );
+  }
 
-  controls = new THREE.OrbitControls( camera, renderer.domElement );
-
-  window.addEventListener( 'resize', onWindowResize, false );
-  for (i = 0; i < 11; i++)
-	  scaleUp();
+  // windown resize listener
+  {
+    window.addEventListener( 'resize', onWindowResize, false );
+    for (i = 0; i < 10; i++)
+    scaleUp();
+  }
 }
 
+/*
+  Resizes object everytime window size changes
+*/
 function onWindowResize() {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
-
-	camera.left   = - frustumSize * camera.aspect / 2;
-	camera.right  =   frustumSize * camera.aspect / 2;
-	camera.top    =   frustumSize / 2;
-	camera.bottom = - frustumSize / 2;
   renderer.setSize( window.innerWidth, window.innerHeight );
 }
 
+/*
+  On mouse move animator
+*/
 function animate() {
   requestAnimationFrame( animate );
   render();
 }
 
+/*
+  Displays to screen
+*/
 function render() {
   renderer.render( scene, camera );
 }
