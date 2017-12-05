@@ -31,8 +31,8 @@ function getAsText1(fileToRead) {
 }
 // Input File Loader for Points file
 function loadHandler1(event) {
-  var csv = event.target.result;
-  processData1(csv);
+  var dat = event.target.result;
+  processData1(dat);
 }
 // Input File Processer for Points file
 function processData1(dat) {
@@ -337,20 +337,30 @@ function normalize() {
   Builds initial view of a character
 */
 function addCharacter() {
+  console.log(points);
+  console.log(lines);
   // getting data from read data which stored in global variables like points and lines
   // l is array such as for line 0, l['1','0']
   lines.forEach(function(l) {
-    while (l[0] !== "-1" && l[1] !== "" && l[0] !== "") {
+    while (l[0] !== "-1" && l[1] !== "") {
       var point = [];
       // getting first point
       for (var i = 0; i < 3; i++) {
         var lineVal0 = parseFloat(l[0]);
-        point.push(parseInt(points[lineVal0][i]));
+        if (points[lineVal0] !== undefined) {
+          point.push(parseInt(points[lineVal0][i]));
+        } else {
+          break;
+        }
       }
       // getting second point
       for (var j = 0; j < 3; j++) {
         var lineVal1 = parseFloat(l[1]);
-        point.push(parseInt(points[lineVal1][j]));
+        if (points[lineVal1] !== undefined) {
+          point.push(parseInt(points[lineVal1][j]));
+        } else {
+          break;
+        }
       }
       // draws line between these points
       geometry.vertices.push(new THREE.Vector3(point[0], point[1], point[2]), new THREE.Vector3(point[3], point[4], point[5]));
