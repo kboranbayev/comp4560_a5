@@ -163,7 +163,6 @@ function translateDown() {
 */
 function scaleUp() {
   console.log('scale up triggered');
-  //geometry.scale(1.1, 1.1, 1.1);
   var m = new THREE.Matrix4();
   m.set( 1.1,   0,     0,    0,
            0,  1.1,    0,    0,
