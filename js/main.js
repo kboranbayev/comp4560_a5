@@ -10,6 +10,7 @@ var scene, renderer;
 var rotX, rotY, rotZ;
 var points = [];  // stores points
 var lines = [];   // stores lines
+var centerPoint = [];
 
 /////////////////////////////////////
 // Input File Opener for Points file
@@ -37,7 +38,7 @@ function loadHandler1(event) {
 // Input File Processer for Points file
 function processData1(dat) {
   var allTextLines = dat.split(/\r\n|\n/);
-
+  points = [];
   for (var i = 0; i < allTextLines.length; i++) {
     var data = allTextLines[i].split(' ');
     var tarr = [];
@@ -72,7 +73,7 @@ function loadHandler2(event) {
 // Input File Processer for Lines file
 function processData2(dat) {
   var allTextLines = dat.split(/\r\n|\n/);
-
+  lines = [];
   for (var i = 0; i < allTextLines.length; i++) {
     var data = allTextLines[i].split(' ');
     var tarr = [];
@@ -92,7 +93,7 @@ function errorHandler(evt) {
 }
 {
     var camera = new THREE.OrthographicCamera( window.innerWidth / -2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / -2, 0.1, 2000 );
-    var material = new THREE.LineBasicMaterial( { color: 0xfefefe, wireframe: true, opacity: 0.5 } );
+    var material = new THREE.LineBasicMaterial( { color: 0xfefefe, opacity: 0.5 } );
     var geometry = new THREE.Geometry();
     var initialGeometry = new THREE.Geometry();
     var line = new THREE.LineSegments(geometry, material);
@@ -247,6 +248,7 @@ function rotateZ() {
 */
 function rotateXcon() {
   console.log('continuous rotate about x triggered');
+  clearInterval(rotX);
   rotX = setInterval(rotateX, 50);
 }
 
@@ -255,6 +257,7 @@ function rotateXcon() {
 */
 function rotateYcon() {
   console.log('continuous rotate about y triggered');
+  clearInterval(rotY);
   rotY = setInterval(rotateY, 50);
 }
 
@@ -263,6 +266,7 @@ function rotateYcon() {
 */
 function rotateZcon() {
   console.log('continuous rotate about z triggered');
+  clearInterval(rotZ);
   rotZ = setInterval(rotateZ, 50);
 }
 
@@ -272,11 +276,23 @@ function rotateZcon() {
 function shearRight() {
   console.log('Shear right triggered');
   var m = new THREE.Matrix4();
-  m.set( 1,  0.1,   0,   0,
-         0,    1,   0,   0,
-         0,    0,   1,   0,
-         0,    0,   0,   1 );
+  var m1 = new THREE.Matrix4();
+  var m2 = new THREE.Matrix4();
+  m1.set(  1,    0,    0,   centerPoint[1],
+           0,    1,    0,    0,
+           0,    0,    1,    0,
+           0,    0,    0,    1 );
+  m.set(   1,  0.1,    0,    0,
+           0,    1,    0,    0,
+           0,    0,    1,    0,
+           0,    0,    0,    1 );
+  m2.set(  1,    0,    0,   -centerPoint[1],
+           0,    1,    0,    0,
+           0,    0,    1,    0,
+           0,    0,    0,    1 );
   geometry.applyMatrix(m);
+  geometry.applyMatrix(m1);
+  //geometry.applyMatrix(m2);
   // render
   render();
 }
@@ -287,11 +303,23 @@ function shearRight() {
 function shearLeft() {
   console.log('Shear left triggered');
   var m = new THREE.Matrix4();
-  m.set( 1, -0.1,   0,   0,
-         0,    1,   0,   0,
-         0,    0,   1,   0,
-         0,    0,   0,   1 );
+  var m1 = new THREE.Matrix4();
+  var m2 = new THREE.Matrix4();
+  m1.set(  1,    0,    0,   -centerPoint[1],
+           0,    1,    0,    0,
+           0,    0,    1,    0,
+           0,    0,    0,    1 );
+  m.set(   1, -0.1,    0,     0,
+           0,    1,    0,     0,
+           0,    0,    1,     0,
+           0,    0,    0,     1 );
+  m2.set(  1,    0,    0,    centerPoint[1],
+           0,    1,    0,   0,
+           0,    0,    1,    0,
+           0,    0,    0,    1 );
+  geometry.applyMatrix(m1);
   geometry.applyMatrix(m);
+  //geometry.applyMatrix(m2);
   // render
   render();
 }
@@ -309,9 +337,34 @@ function reset() {
   }
   // remove current state
   scene.remove(line);
-  geometry.dispose();
   // reset to initial state
   geometry = initialGeometry;
+  lines.forEach(function(l) {
+    while (l[0] !== "-1" && l[1] !== "") {
+      var point = [];
+      // getting first point
+      for (var i = 0; i < 3; i++) {
+        var lineVal0 = parseFloat(l[0]);
+        if (points[lineVal0] !== undefined) {
+          point.push(parseInt(points[lineVal0][i]));
+        } else {
+          break;
+        }
+      }
+      // getting second point
+      for (var j = 0; j < 3; j++) {
+        var lineVal1 = parseFloat(l[1]);
+        if (points[lineVal1] !== undefined) {
+          point.push(parseInt(points[lineVal1][j]));
+        } else {
+          break;
+        }
+      }
+      // draws line between these points
+      geometry.vertices.push(new THREE.Vector3(point[0], point[1], point[2]), new THREE.Vector3(point[3], point[4], point[5]));
+      break;
+    }
+  });
   line = new THREE.LineSegments(geometry, material);
   scene.add(line);
   // normalize view and render
@@ -329,7 +382,8 @@ function normalize() {
   camera.position.z = 500;
   camera.position.x = 0;
   camera.position.y = 0;
-  for (i = 0; i < 10; i++)
+
+  for (i = 0; i < 5; i++)
     scaleUp();
 }
 
@@ -339,6 +393,9 @@ function normalize() {
 function addCharacter() {
   console.log(points);
   console.log(lines);
+  // center point
+  centerPoint.push(parseInt(points[0][0]));
+  centerPoint.push(parseInt(points[0][1]));
   // getting data from read data which stored in global variables like points and lines
   // l is array such as for line 0, l['1','0']
   lines.forEach(function(l) {
@@ -368,13 +425,12 @@ function addCharacter() {
     }
   });
   scene.add(line);
+  // copy init matrix for reset
   initialGeometry = geometry.clone();
-  // scale geometry to a uniform size
-  //geometry.computeBoundingSphere();
   geometry.normalize();
-  //geometry.rotateX(1.5708);
+  // scale geometry to a uniform size
   var scaleFactor = 160 / geometry.boundingSphere.radius;
-  geometry.scale( scaleFactor, scaleFactor, scaleFactor );
+  geometry.scale(scaleFactor, scaleFactor, scaleFactor);
 }
 
 function init() {
@@ -407,8 +463,8 @@ function init() {
   // windown resize listener
   {
     window.addEventListener( 'resize', onWindowResize, false );
-    for (i = 0; i < 10; i++)
-    scaleUp();
+    for (i = 0; i < 5; i++)
+      scaleUp();
   }
 }
 
